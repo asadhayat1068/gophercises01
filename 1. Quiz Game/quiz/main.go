@@ -16,17 +16,20 @@ func main() {
 	file, err := os.Open(*csvFileName)
 
 	if err != nil {
-		fmt.Printf("Failed to open CSV file: %s\n", *csvFileName)
-		os.Exit(1)
+		exit(fmt.Sprintf("Failed to open CSV file: %s\n", *csvFileName))
 	}
 
 	r := csv.NewReader(file)
 	lines, err := r.ReadAll()
 
 	if err != nil {
-		fmt.Printf("Failed to parse the provided CSV file: %s\n", *csvFileName)
-		os.Exit(1)
+		exit(fmt.Sprintf("Failed to parse the provided CSV file: %s\n", *csvFileName))
 	}
 
 	fmt.Println(lines)
+}
+
+func exit(msg string)  {
+	fmt.Println(msg)
+	os.Exit(1)
 }
