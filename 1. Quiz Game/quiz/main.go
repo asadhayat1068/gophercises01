@@ -7,6 +7,11 @@ import (
 	"os"
 )
 
+type problem struct {
+	question string
+	answer string
+}
+
 func main() {
 	csvFileName := flag.String(
 		"csv", "problems.csv",
@@ -21,12 +26,24 @@ func main() {
 
 	r := csv.NewReader(file)
 	lines, err := r.ReadAll()
-
 	if err != nil {
 		exit(fmt.Sprintf("Failed to parse the provided CSV file: %s\n", *csvFileName))
 	}
 
-	fmt.Println(lines)
+	problems := parseLines(lines)
+	fmt.Println(problems)
+}
+
+func parseLines(lines [][]string) []problem {
+	problems :=  make([]problem, len(lines))
+	for i, line := range lines {
+		problems[i] = problem{
+			question: line[0],
+			answer: line[1],
+		}
+	}
+	return problems
+	
 }
 
 func exit(msg string)  {
