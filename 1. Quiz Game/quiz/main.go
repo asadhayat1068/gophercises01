@@ -37,16 +37,24 @@ func main() {
 	problems := parseLines(lines)
 
 	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
-	fmt.Print("Waiting for Channel: ")
-	fmt.Print(<-timer.C)
-
 	correct := 0
 	for i, p := range problems {
 		fmt.Printf("Problem %d: %s = ", i+1, p.question)
-		var answer string
-		fmt.Scanf("%s \n", &answer)
-		if answer == p.answer {
-			correct++
+		answerCh := make(chan string)
+		go func() {
+			var answer string
+			fmt.Scanf("%s \n", &answer)
+			answerCh <- answer
+
+		}()
+		select {
+			case <-timer.C:
+				fmt.Printf("\nTimelimit expired.\nYou scored %d out of %d.\n", correct, len(problems))
+				return
+			case answer := <-answerCh:
+				if answer == p.answer {
+					correct++
+				}
 		}
 	}
 	fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
